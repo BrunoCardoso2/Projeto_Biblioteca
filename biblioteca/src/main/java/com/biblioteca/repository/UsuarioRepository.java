@@ -8,4 +8,3 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByNome(String nome);
 }
-//teste versão git
