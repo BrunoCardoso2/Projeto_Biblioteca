@@ -21,7 +21,7 @@ public class UsuarioController {
     public Usuario adicionarUsuario(@RequestBody Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
-    // Deletar  Autor
+    // Deletar  Usuario
     @DeleteMapping("/deletar")
     public ResponseEntity<List<Usuario>> deletarUsuario(@RequestBody Map<String, String> body) {
         String nome = body.get("nome");
