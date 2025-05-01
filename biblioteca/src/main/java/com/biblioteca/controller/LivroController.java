@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/livros")
@@ -25,7 +26,22 @@ public class LivroController {
         Livro novoLivro = livroRepository.save(livro);
         return ResponseEntity.ok(novoLivro);
     }
+
+    // Deletar  livro
+    @DeleteMapping("/deletar")
+    public ResponseEntity<List<Livro>> deletarLivro(@RequestBody Map<String, String> body) {
+        String nome = body.get("nome");
     
+        List<Livro> livros = livroRepository.findByNomeIgnoreCase(nome);
+        if (livros.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+    
+        livroRepository.deleteAll(livros);
+        return ResponseEntity.ok(livros);
+    }
+    
+
     // Buscar livro por nome
     @GetMapping("/nome/{nome}")
     public ResponseEntity<List<Livro>> buscarPorNome(@PathVariable String nome) {

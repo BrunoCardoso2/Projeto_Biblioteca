@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/autores")
@@ -20,6 +21,20 @@ public class AutorController {
     public ResponseEntity<Autor> criarAutor(@RequestBody Autor autor) {
         Autor novoAutor = autorRepository.save(autor);
         return ResponseEntity.ok(novoAutor);
+    }
+
+        // Deletar  Autor
+    @DeleteMapping("/deletar")
+    public ResponseEntity<List<Autor>> deletarAutor(@RequestBody Map<String, String> body) {
+        String nome = body.get("nome");
+    
+        List<Autor> autores = autorRepository.findByNomeIgnoreCase(nome);
+        if (autores.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+    
+        autorRepository.deleteAll(autores);
+        return ResponseEntity.ok(autores);
     }
 
     // Buscar autor por nome
