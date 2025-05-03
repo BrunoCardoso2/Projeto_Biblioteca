@@ -40,4 +40,25 @@ public class UsuarioController {
     public List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
     }
+
+    @PutMapping("/atualizar")
+public ResponseEntity<List<Usuario>> atualizarUsuario(@RequestBody Usuario usuarioAtualizado) {
+    if (usuarioAtualizado.getNome() == null) {
+        return ResponseEntity.badRequest().build(); // Nome é obrigatório
+    }
+
+    List<Usuario> usuarios = usuarioRepository.findByNomeIgnoreCase(usuarioAtualizado.getNome());
+
+    if (usuarios.isEmpty()) {
+        return ResponseEntity.notFound().build(); // Nenhum usuário com esse nome
+    }
+
+    for (Usuario usuario : usuarios) {
+        usuario.setNome(usuarioAtualizado.getNome()); // Pode ser o mesmo ou um novo nome
+        usuarioRepository.save(usuario);
+    }
+
+    return ResponseEntity.ok(usuarios);
+}
+
 }

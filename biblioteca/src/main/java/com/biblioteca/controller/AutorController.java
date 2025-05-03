@@ -53,4 +53,26 @@ public class AutorController {
         List<Autor> autores = autorRepository.findAll();
         return ResponseEntity.ok(autores);
     }
+
+    @PutMapping("/atualizar")
+    public ResponseEntity<List<Autor>> atualizarAutor(@RequestBody Autor autorAtualizado) {
+        if (autorAtualizado.getNome() == null) {
+            return ResponseEntity.badRequest().build(); // Nome é necessário
+        }
+    
+        List<Autor> autores = autorRepository.findByNomeIgnoreCase(autorAtualizado.getNome());
+    
+        if (autores.isEmpty()) {
+            return ResponseEntity.notFound().build(); // Nenhum autor encontrado com o nome fornecido
+        }
+    
+        for (Autor autor : autores) {
+            autor.setNome(autorAtualizado.getNome()); // Atualiza o nome (pode manter ou mudar)
+            autorRepository.save(autor);
+        }
+    
+        return ResponseEntity.ok(autores);
+    }
+    
+
 }

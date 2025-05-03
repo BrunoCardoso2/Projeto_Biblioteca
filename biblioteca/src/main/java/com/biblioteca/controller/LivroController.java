@@ -34,7 +34,7 @@ public class LivroController {
     
         List<Livro> livros = livroRepository.findByNomeIgnoreCase(nome);
         if (livros.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build(); // Retorna 404 se não encontrar livros
         }
     
         livroRepository.deleteAll(livros);
@@ -52,7 +52,7 @@ public class LivroController {
         return ResponseEntity.ok(livros);
     }
 
-    // Buscar livros pelo estado (DISPONIVEL, EMPRESTADO, etc.)
+    // Buscar livros pelo estado (DISPONIVEL, EMPRESTADO)
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<Livro>> buscarPorEstado(@PathVariable EstadoLivro estado) {
         List<Livro> livros = livroRepository.findByEstado(estado);
@@ -62,7 +62,7 @@ public class LivroController {
         return ResponseEntity.ok(livros);
     }
 
-    // Atualizar estado de um livro (exemplo: de DISPONIVEL para EMPRESTADO)
+    // Atualizar estado de um livro (ex: DISPONIVEL para EMPRESTADO)
     @PutMapping("/{id}/estado")
     public ResponseEntity<Livro> atualizarEstado(@PathVariable Long id, @RequestParam EstadoLivro estado) {
         return livroRepository.findById(id)
@@ -85,8 +85,32 @@ public class LivroController {
      public ResponseEntity<List<Livro>> listarLivrosPorAutor(@PathVariable Long autorId) {
          List<Livro> livros = livroRepository.findByAutorId(autorId);
          if (livros.isEmpty()) {
-             return ResponseEntity.notFound().build(); // Retorna 404 se não encontrar livros
+             return ResponseEntity.notFound().build();
          }
          return ResponseEntity.ok(livros);
      }
+
+     @PutMapping("/atualizar")
+     public ResponseEntity<List<Livro>> atualizarLivro(@RequestBody Livro livroAtualizado) {
+         if (livroAtualizado.getNome() == null) {
+             return ResponseEntity.badRequest().build(); // Nome é obrigatório
+         }
+     
+         List<Livro> livros = livroRepository.findByNomeIgnoreCase(livroAtualizado.getNome());
+     
+         if (livros.isEmpty()) {
+             return ResponseEntity.notFound().build(); // Nenhum livro com esse nome
+         }
+     
+         for (Livro livro : livros) {
+             // Substitui completamente os dados do livro
+             livro.setEstado(livroAtualizado.getEstado());
+             livro.setAutor(livroAtualizado.getAutor());
+             livro.setNome(livroAtualizado.getNome()); // Pode manter ou substituir com o mesmo nome
+             livroRepository.save(livro);
+         }
+     
+         return ResponseEntity.ok(livros);
+     }
+     
 }
